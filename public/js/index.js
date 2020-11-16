@@ -56,16 +56,12 @@
     // reference.
     var sheetName = tableau.extensions.settings.get("worksheet");
     if (sheetName == undefined || sheetName == "" || sheetName == null) {
-      $("#configure").show();
       $("#datatable").text("");
       if (tableReference !== null) {
         tableReference.destroy();
       }
       // Exit the function if no worksheet name is present !!!
       return;
-    } else {
-      // If a worksheet is selected, then we hide the configuration screen.
-      $("#configure").hide();
     }
 
     // Use the worksheet name saved in the Settings to find and return
