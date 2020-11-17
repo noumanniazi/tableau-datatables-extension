@@ -129,30 +129,51 @@
         var buttons = [];
         var clipboard = tableau.extensions.settings.get("export-clipboard");
         if (clipboard == "Y") {
-          buttons.push('copy');
+          buttons.push({
+            extend: 'copy',
+            title: '',
+            messageBottom: '',
+          });
         }
         var csv = tableau.extensions.settings.get("export-csv");
         if (csv == "Y") {
-          buttons.push('csv');
+          buttons.push({
+            extend: 'csv',
+            title: '',
+          });
         }
         var excel = tableau.extensions.settings.get("export-excel");
         if (excel == "Y") {
-          buttons.push('excel');
+          buttons.push({
+            extend: 'excel',
+            title: '',
+            messageBottom: '',
+          });
         }
         var pdf = tableau.extensions.settings.get("export-pdf");
         if (pdf == "Y") {
-          buttons.push('pdf');
+          buttons.push({
+            extend: 'pdfHtml5',
+            orientation: 'landscape',
+            pageSize: 'LEGAL',
+            title: '',
+            messageBottom: '',
+          });
         }
         var print = tableau.extensions.settings.get("export-print");
         if (print == "Y") {
-          buttons.push('print');
+          buttons.push({
+            extend: 'print',
+            title: '',
+            messageBottom: '',
+          });
         }
 
-        // If there are 1 or more Export options ticked, then we will add the dom: 'Bfrtip'
+        // If there are 1 or more Export options ticked, then we will add the dom: 'lBfrtip'
         // Else leave this out.
         if (buttons.length > 0) {
           tableReference = $('#datatable').DataTable({
-            dom: 'Bfrtip',
+            dom: 'lBfrtip',
             data: tableData,
             columns: data,
             responsive: true,
@@ -213,30 +234,51 @@
         var buttons = [];
         var clipboard = tableau.extensions.settings.get("export-clipboard");
         if (clipboard == "Y") {
-          buttons.push('copy');
+          buttons.push({
+            extend: 'copy',
+            title: '',
+            messageBottom: '',
+          });
         }
         var csv = tableau.extensions.settings.get("export-csv");
         if (csv == "Y") {
-          buttons.push('csv');
+          buttons.push({
+            extend: 'csv',
+            title: '',
+          });
         }
         var excel = tableau.extensions.settings.get("export-excel");
         if (excel == "Y") {
-          buttons.push('excel');
+          buttons.push({
+            extend: 'excel',
+            title: '',
+            messageBottom: '',
+          });
         }
         var pdf = tableau.extensions.settings.get("export-pdf");
         if (pdf == "Y") {
-          buttons.push('pdf');
+          buttons.push({
+            extend: 'pdfHtml5',
+            orientation: 'landscape',
+            pageSize: 'LEGAL',
+            title: '',
+            messageBottom: '',
+          });
         }
         var print = tableau.extensions.settings.get("export-print");
         if (print == "Y") {
-          buttons.push('print');
+          buttons.push({
+            extend: 'print',
+            title: '',
+            messageBottom: '',
+          });
         }
 
-        // If there are 1 or more Export options ticked, then we will add the dom: 'Bfrtip'
+        // If there are 1 or more Export options ticked, then we will add the dom: 'lBfrtip'
         // Else leave this out.
         if (buttons.length > 0) {
           tableReference = $('#datatable').DataTable({
-            dom: 'Bfrtip',
+            dom: 'lBfrtip',
             data: tableData,
             columns: data,
             responsive: true,
