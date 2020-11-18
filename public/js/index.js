@@ -2,6 +2,22 @@
 
 (function () {
 
+  $.fn.dataTable.moment = function ( format, locale ) {
+    var types = $.fn.dataTable.ext.type;
+ 
+    // Add type detection
+    types.detect.unshift( function ( d ) {
+        return moment( d, format, locale, true ).isValid() ?
+            'moment-'+format :
+            null;
+    } );
+ 
+    // Add sorting method - use an integer for the sorting
+    types.order[ 'moment-'+format+'-pre' ] = function ( d ) {
+        return moment( d, format, locale, true ).unix();
+    };
+};
+
   // Creates a global table reference for future use.
   let tableReference = null;
 
@@ -169,6 +185,7 @@
           });
         }
 
+        $.fn.dataTable.moment( 'DD/MM/YYYY' );
         // If there are 1 or more Export options ticked, then we will add the dom: 'lBfrtip'
         // Else leave this out.
         if (buttons.length > 0) {
@@ -176,6 +193,11 @@
             dom: 'lBfrtip',
             data: tableData,
             columns: data,
+            // columnDefs: [{
+            //   targets: 10,
+            //   data: "dateEstb",
+            //   type: 'date',
+            // }],
             responsive: true,
             buttons: buttons,
             bAutoWidth: false,
@@ -274,6 +296,7 @@
           });
         }
 
+        $.fn.dataTable.moment( 'DD/MM/YYYY' );
         // If there are 1 or more Export options ticked, then we will add the dom: 'lBfrtip'
         // Else leave this out.
         if (buttons.length > 0) {
@@ -321,6 +344,7 @@
 
       // Get selection data based on "columnsToMatch", "columnNamesInOrder" and "rowData"
       const selectionData = getSelectMarkSelectionData(columnsToMatch, columnNamesInOrder, rowData);
+      console.log('here---->');
 
       // If we get data that matches something then a selection will be made and Details page will be opened.
       unregisterSelectMarksEventListener = worksheetRef.selectMarksByValueAsync(selectionData, tableau.SelectionUpdateType.Replace);
