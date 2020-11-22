@@ -2,6 +2,22 @@
 
 (function () {
 
+  $.fn.dataTable.moment = function (format, locale) {
+    var types = $.fn.dataTable.ext.type;
+
+    // Add type detection
+    types.detect.unshift(function (d) {
+      return moment(d, format, locale, true).isValid() ?
+        'moment-' + format :
+        null;
+    });
+
+    // Add sorting method - use an integer for the sorting
+    types.order['moment-' + format + '-pre'] = function (d) {
+      return moment(d, format, locale, true).unix();
+    };
+  };
+
   // Creates a global table reference for future use.
   let tableReference = null;
 
@@ -99,18 +115,32 @@
         for (i = 0; i < column_names.length; i++) {
           data.push({ title: column_names[i] });
         }
+        // To add Row Number column at the start
+        data.unshift({ title: 'Sr No.' })
 
         // We have created an array to match the underlying data source and then
         // looped through to populate our array with the value data set. We also added
         // logic to read from the column names and column order from our configiration.
         const worksheetData = underlying.data;
         var column_order = tableau.extensions.settings.get("column_order").split("|");
-        var tableData = makeArray(underlying.columns.length, underlying.totalRowCount);
+        // added +1 to columns length to cater Sr No. column added
+        var tableData = makeArray(underlying.columns.length + 1, underlying.totalRowCount);
+        var geborenIndex = column_names.indexOf('Geboren op');
+        var datumPublicatieIndex = column_names.indexOf('datum_publicatie');
+        var publicatieDatumIndex = column_names.indexOf('Publicatiedatum');
         for (var i = 0; i < tableData.length; i++) {
-          for (var j = 0; j < tableData[i].length; j++) {
-            // you can get teh value or formatted value
+          for (var j = 0; j < tableData[i].length - 1; j++) {
+            // you can get the value or formatted value
             // https://tableau.github.io/extensions-api/docs/interfaces/datavalue.html
-            tableData[i][j] = worksheetData[i][column_order[j] - 1].formattedValue;
+            if (j === 0) {
+              // Adding shell value which will be replaced by Sr No.
+              tableData[i][j] = '';
+            }
+            if (j === geborenIndex || j === publicatieDatumIndex || j === datumPublicatieIndex) {
+              tableData[i][j + 1] = moment(worksheetData[i][column_order[j] - 1].formattedValue, 'DD/MM/YYYY').format('MM-DD-YYYY');
+            } else {
+              tableData[i][j + 1] = worksheetData[i][column_order[j] - 1].formattedValue;
+            }
           }
         }
 
@@ -129,31 +159,59 @@
         var buttons = [];
         var clipboard = tableau.extensions.settings.get("export-clipboard");
         if (clipboard == "Y") {
-          buttons.push('copy');
+          buttons.push({
+            extend: 'copy',
+            title: '',
+            messageBottom: '',
+          });
         }
         var csv = tableau.extensions.settings.get("export-csv");
         if (csv == "Y") {
-          buttons.push('csv');
+          buttons.push({
+            extend: 'csv',
+            title: '',
+          });
         }
         var excel = tableau.extensions.settings.get("export-excel");
         if (excel == "Y") {
-          buttons.push('excel');
+          buttons.push({
+            extend: 'excel',
+            title: '',
+            messageBottom: '',
+          });
         }
         var pdf = tableau.extensions.settings.get("export-pdf");
         if (pdf == "Y") {
-          buttons.push('pdf');
+          buttons.push({
+            extend: 'pdfHtml5',
+            orientation: 'landscape',
+            pageSize: 'LEGAL',
+            title: '',
+            messageBottom: '',
+          });
         }
         var print = tableau.extensions.settings.get("export-print");
         if (print == "Y") {
-          buttons.push('print');
+          buttons.push({
+            extend: 'print',
+            title: '',
+            messageBottom: '',
+          });
         }
 
-        // If there are 1 or more Export options ticked, then we will add the dom: 'Bfrtip'
+        $.fn.dataTable.moment('MM-DD-YYYY');
+        // If there are 1 or more Export options ticked, then we will add the dom: 'lBfrtip'
         // Else leave this out.
         if (buttons.length > 0) {
           tableReference = $('#datatable').DataTable({
-            dom: 'Bfrtip',
+            dom: 'lBfrtip',
             data: tableData,
+            columnDefs: [{
+              "searchable": false,
+              "orderable": false,
+              "targets": 0
+            }],
+            order: [[1, 'asc']],
             columns: data,
             responsive: true,
             buttons: buttons,
@@ -166,6 +224,12 @@
           tableReference = $('#datatable').DataTable({
             data: tableData,
             columns: data,
+            columnDefs: [{
+              "searchable": false,
+              "orderable": false,
+              "targets": 0
+            }],
+            order: [[1, 'asc']],
             responsive: true,
             bAutoWidth: false,
             initComplete: datatableInitCallback,
@@ -173,6 +237,11 @@
             oLanguage: datatableLangObj
           });
         }
+        tableReference.on('order.dt search.dt', function () {
+          tableReference.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+            cell.innerHTML = i + 1;
+          });
+        }).draw();
         handleRowEvents(worksheet)
       })
     } else {
@@ -185,16 +254,29 @@
         for (i = 0; i < column_names.length; i++) {
           data.push({ title: column_names[i] });
         }
+        // To add Row Number column at the start
+        data.unshift({ title: 'Sr No.' })
 
         // We have created an array to match the underlying data source and then
         // looped through to populate our array with the value data set. We also added
         // logic to read from the column names and column order from our configiration.
         const worksheetData = sumdata.data;
         var column_order = tableau.extensions.settings.get("column_order").split("|");
-        var tableData = makeArray(sumdata.columns.length, sumdata.totalRowCount);
+        // added +1 to columns length to cater Sr No. column added
+        var tableData = makeArray(sumdata.columns.length + 1, sumdata.totalRowCount);
+        var geborenIndex = column_names.indexOf('Geboren op');
+        var publicatieDatumIndex = column_names.indexOf('AGG(Publicatiedatum)');
         for (var i = 0; i < tableData.length; i++) {
-          for (var j = 0; j < tableData[i].length; j++) {
-            tableData[i][j] = worksheetData[i][column_order[j] - 1].formattedValue;
+          for (var j = 0; j < tableData[i].length - 1; j++) {
+            if (j === 0) {
+              // Adding shell value which will be replaced by Sr No.
+              tableData[i][j] = '';
+            }
+            if (j === geborenIndex || j === publicatieDatumIndex) {
+              tableData[i][j + 1] = moment(worksheetData[i][column_order[j] - 1].formattedValue, 'DD/MM/YYYY').format('MM-DD-YYYY');
+            } else {
+              tableData[i][j + 1] = worksheetData[i][column_order[j] - 1].formattedValue;
+            }
           }
         }
 
@@ -213,32 +295,60 @@
         var buttons = [];
         var clipboard = tableau.extensions.settings.get("export-clipboard");
         if (clipboard == "Y") {
-          buttons.push('copy');
+          buttons.push({
+            extend: 'copy',
+            title: '',
+            messageBottom: '',
+          });
         }
         var csv = tableau.extensions.settings.get("export-csv");
         if (csv == "Y") {
-          buttons.push('csv');
+          buttons.push({
+            extend: 'csv',
+            title: '',
+          });
         }
         var excel = tableau.extensions.settings.get("export-excel");
         if (excel == "Y") {
-          buttons.push('excel');
+          buttons.push({
+            extend: 'excel',
+            title: '',
+            messageBottom: '',
+          });
         }
         var pdf = tableau.extensions.settings.get("export-pdf");
         if (pdf == "Y") {
-          buttons.push('pdf');
+          buttons.push({
+            extend: 'pdfHtml5',
+            orientation: 'landscape',
+            pageSize: 'LEGAL',
+            title: '',
+            messageBottom: '',
+          });
         }
         var print = tableau.extensions.settings.get("export-print");
         if (print == "Y") {
-          buttons.push('print');
+          buttons.push({
+            extend: 'print',
+            title: '',
+            messageBottom: '',
+          });
         }
 
-        // If there are 1 or more Export options ticked, then we will add the dom: 'Bfrtip'
+        $.fn.dataTable.moment('MM-DD-YYYY');
+        // If there are 1 or more Export options ticked, then we will add the dom: 'lBfrtip'
         // Else leave this out.
         if (buttons.length > 0) {
           tableReference = $('#datatable').DataTable({
-            dom: 'Bfrtip',
+            dom: 'lBfrtip',
             data: tableData,
             columns: data,
+            columnDefs: [{
+              "searchable": false,
+              "orderable": false,
+              "targets": 0
+            }],
+            order: [[1, 'asc']],
             responsive: true,
             buttons: buttons,
             bAutoWidth: false,
@@ -251,6 +361,12 @@
           tableReference = $('#datatable').DataTable({
             data: tableData,
             columns: data,
+            columnDefs: [{
+              "searchable": false,
+              "orderable": false,
+              "targets": 0
+            }],
+            order: [[1, 'asc']],
             responsive: true,
             bAutoWidth: false,
             initComplete: datatableInitCallback,
@@ -258,6 +374,11 @@
             oLanguage: datatableLangObj
           });
         }
+        tableReference.on('order.dt search.dt', function () {
+          tableReference.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+            cell.innerHTML = i + 1;
+          });
+        }).draw();
         handleRowEvents(worksheet)
       })
     }
@@ -275,7 +396,6 @@
     $('#datatable tbody').on('click', 'tr', function () {
       // Gets clicked row data
       var rowData = tableReference.row(this).data();
-      // $('#rowSelected').append('<p>clicked</p>')
 
       // Get selection data based on "columnsToMatch", "columnNamesInOrder" and "rowData"
       const selectionData = getSelectMarkSelectionData(columnsToMatch, columnNamesInOrder, rowData);
@@ -293,7 +413,7 @@
         ...accum,
         {
           fieldName: value,
-          value: [rowData[columnsOrder.indexOf(value)]]
+          value: [rowData[columnsOrder.indexOf(value) + 1]]// Added "+1" to cater for offset created by Sr No. column which is added only in Table and not to the worksheet data
         }
       ]
     }, [])
