@@ -240,6 +240,7 @@
         tableReference.on('order.dt search.dt', function () {
           tableReference.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
             cell.innerHTML = i + 1;
+            tableReference.cell(cell).invalidate('dom');
           });
         }).draw();
         handleRowEvents(worksheet)
@@ -377,6 +378,7 @@
         tableReference.on('order.dt search.dt', function () {
           tableReference.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
             cell.innerHTML = i + 1;
+            tableReference.cell(cell).invalidate('dom');
           });
         }).draw();
         handleRowEvents(worksheet)
