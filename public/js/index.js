@@ -137,7 +137,7 @@
               tableData[i][j] = '';
             }
             if (j === geborenIndex || j === publicatieDatumIndex || j === datumPublicatieIndex) {
-              tableData[i][j + 1] = moment(worksheetData[i][column_order[j] - 1].formattedValue, 'DD/MM/YYYY').format('MM-DD-YYYY');
+              tableData[i][j + 1] = moment(worksheetData[i][column_order[j] - 1].formattedValue, 'DD/MM/YYYY').format('DD-MM-YYYY');
             } else {
               tableData[i][j + 1] = worksheetData[i][column_order[j] - 1].formattedValue;
             }
@@ -199,7 +199,7 @@
           });
         }
 
-        $.fn.dataTable.moment('MM-DD-YYYY');
+        $.fn.dataTable.moment('DD-MM-YYYY');
         // If there are 1 or more Export options ticked, then we will add the dom: 'lBfrtip'
         // Else leave this out.
         if (buttons.length > 0) {
@@ -274,7 +274,7 @@
               tableData[i][j] = '';
             }
             if (j === geborenIndex || j === publicatieDatumIndex) {
-              tableData[i][j + 1] = moment(worksheetData[i][column_order[j] - 1].formattedValue, 'DD/MM/YYYY').format('MM-DD-YYYY');
+              tableData[i][j + 1] = moment(worksheetData[i][column_order[j] - 1].formattedValue, 'DD/MM/YYYY').format('DD-MM-YYYY');
             } else {
               tableData[i][j + 1] = worksheetData[i][column_order[j] - 1].formattedValue;
             }
@@ -336,7 +336,7 @@
           });
         }
 
-        $.fn.dataTable.moment('MM-DD-YYYY');
+        $.fn.dataTable.moment('DD-MM-YYYY');
         // If there are 1 or more Export options ticked, then we will add the dom: 'lBfrtip'
         // Else leave this out.
         if (buttons.length > 0) {
