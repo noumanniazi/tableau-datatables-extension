@@ -116,14 +116,14 @@
           data.push({ title: column_names[i] });
         }
         // To add Row Number column at the start
-        data.unshift({ title: 'Sr No.' })
+        data.unshift({ title: 'Nummer' })
 
         // We have created an array to match the underlying data source and then
         // looped through to populate our array with the value data set. We also added
         // logic to read from the column names and column order from our configiration.
         const worksheetData = underlying.data;
         var column_order = tableau.extensions.settings.get("column_order").split("|");
-        // added +1 to columns length to cater Sr No. column added
+        // added +1 to columns length to cater Nummer column added
         var tableData = makeArray(underlying.columns.length + 1, underlying.totalRowCount);
         var geborenIndex = column_names.indexOf('Geboren op');
         var datumPublicatieIndex = column_names.indexOf('datum_publicatie');
@@ -133,7 +133,7 @@
             // you can get the value or formatted value
             // https://tableau.github.io/extensions-api/docs/interfaces/datavalue.html
             if (j === 0) {
-              // Adding shell value which will be replaced by Sr No.
+              // Adding shell value which will be replaced by Nummer
               tableData[i][j] = '';
             }
             if (j === geborenIndex || j === publicatieDatumIndex || j === datumPublicatieIndex) {
@@ -256,21 +256,21 @@
           data.push({ title: column_names[i] });
         }
         // To add Row Number column at the start
-        data.unshift({ title: 'Sr No.' })
+        data.unshift({ title: 'Nummer' })
 
         // We have created an array to match the underlying data source and then
         // looped through to populate our array with the value data set. We also added
         // logic to read from the column names and column order from our configiration.
         const worksheetData = sumdata.data;
         var column_order = tableau.extensions.settings.get("column_order").split("|");
-        // added +1 to columns length to cater Sr No. column added
+        // added +1 to columns length to cater Nummer column added
         var tableData = makeArray(sumdata.columns.length + 1, sumdata.totalRowCount);
         var geborenIndex = column_names.indexOf('Geboren op');
         var publicatieDatumIndex = column_names.indexOf('AGG(Publicatiedatum)');
         for (var i = 0; i < tableData.length; i++) {
           for (var j = 0; j < tableData[i].length - 1; j++) {
             if (j === 0) {
-              // Adding shell value which will be replaced by Sr No.
+              // Adding shell value which will be replaced by Nummer
               tableData[i][j] = '';
             }
             if (j === geborenIndex || j === publicatieDatumIndex) {
@@ -415,7 +415,7 @@
         ...accum,
         {
           fieldName: value,
-          value: [rowData[columnsOrder.indexOf(value) + 1]]// Added "+1" to cater for offset created by Sr No. column which is added only in Table and not to the worksheet data
+          value: [rowData[columnsOrder.indexOf(value) + 1]]// Added "+1" to cater for offset created by Nummer column which is added only in Table and not to the worksheet data
         }
       ]
     }, [])
