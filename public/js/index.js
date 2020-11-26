@@ -17,7 +17,9 @@
       return moment(d, format, locale, true).unix();
     };
   };
-
+  
+  var DB_DATE_FORMAT = 'YYYY-MM-DD';
+  var DATE_FORMAT = 'DD-MM-YYYY';
   // Creates a global table reference for future use.
   let tableReference = null;
 
@@ -125,9 +127,6 @@
         var column_order = tableau.extensions.settings.get("column_order").split("|");
         // added +1 to columns length to cater Nummer column added
         var tableData = makeArray(underlying.columns.length + 1, underlying.totalRowCount);
-        var geborenIndex = column_names.indexOf('Geboren op');
-        var datumPublicatieIndex = column_names.indexOf('datum_publicatie');
-        var publicatieDatumIndex = column_names.indexOf('Publicatiedatum');
         for (var i = 0; i < tableData.length; i++) {
           for (var j = 0; j < tableData[i].length - 1; j++) {
             // you can get the value or formatted value
@@ -136,11 +135,7 @@
               // Adding shell value which will be replaced by Nummer
               tableData[i][j] = '';
             }
-            if (j === geborenIndex || j === publicatieDatumIndex || j === datumPublicatieIndex) {
-              tableData[i][j + 1] = moment(worksheetData[i][column_order[j] - 1].formattedValue, 'DD/MM/YYYY').format('DD-MM-YYYY');
-            } else {
-              tableData[i][j + 1] = worksheetData[i][column_order[j] - 1].formattedValue;
-            }
+            tableData[i][j + 1] = worksheetData[i][column_order[j] - 1].formattedValue;
           }
         }
 
@@ -199,7 +194,7 @@
           });
         }
 
-        $.fn.dataTable.moment('DD-MM-YYYY');
+        $.fn.dataTable.moment(DATE_FORMAT);
         // If there are 1 or more Export options ticked, then we will add the dom: 'lBfrtip'
         // Else leave this out.
         if (buttons.length > 0) {
@@ -273,8 +268,8 @@
               // Adding shell value which will be replaced by Nummer
               tableData[i][j] = '';
             }
-            if (j === geborenIndex || j === publicatieDatumIndex) {
-              tableData[i][j + 1] = moment(worksheetData[i][column_order[j] - 1].formattedValue, 'DD/MM/YYYY').format('DD-MM-YYYY');
+            if(moment(worksheetData[i][column_order[j] - 1].value, DB_DATE_FORMAT, null, true).isValid()) {
+              tableData[i][j + 1] = moment(worksheetData[i][column_order[j] - 1].value, DB_DATE_FORMAT, null, true).format(DATE_FORMAT);
             } else {
               tableData[i][j + 1] = worksheetData[i][column_order[j] - 1].formattedValue;
             }
@@ -336,7 +331,7 @@
           });
         }
 
-        $.fn.dataTable.moment('DD-MM-YYYY');
+        $.fn.dataTable.moment(DATE_FORMAT);
         // If there are 1 or more Export options ticked, then we will add the dom: 'lBfrtip'
         // Else leave this out.
         if (buttons.length > 0) {
@@ -349,7 +344,7 @@
               "orderable": false,
               "targets": 0
             }],
-            order: [[1, 'asc']],
+            order: [[9, 'desc']],
             responsive: true,
             buttons: buttons,
             bAutoWidth: false,
@@ -367,7 +362,7 @@
               "orderable": false,
               "targets": 0
             }],
-            order: [[1, 'asc']],
+            order: [[9, 'desc']],
             responsive: true,
             bAutoWidth: false,
             initComplete: datatableInitCallback,
